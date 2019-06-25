@@ -5,8 +5,8 @@ defmodule Board.Task.Card do
   schema "cards" do
     field :details, :string
     field :title, :string
-    field :list_id, :id
-    field :user_id, :id
+    belongs_to :list, Board.Task.List
+    belongs_to :user, Board.Accounts.User
 
     timestamps()
   end
@@ -14,7 +14,7 @@ defmodule Board.Task.Card do
   @doc false
   def changeset(card, attrs) do
     card
-    |> cast(attrs, [:title, :details])
-    |> validate_required([:title, :details])
+    |> cast(attrs, [:title, :details, :list_id, :user_id])
+    |> validate_required([:title, :details, :list_id, :user_id])
   end
 end
