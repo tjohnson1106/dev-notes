@@ -1,6 +1,12 @@
 defmodule BoardWeb.CardControllerTest do
   use BoardWeb.ConnCase
 
+  import Board.Fixtures,
+    only: [
+      create_list: 1,
+      create_user: 1
+    ]
+
   alias Board.Task
 
   @create_attrs %{details: "some details", title: "some title"}
@@ -8,7 +14,15 @@ defmodule BoardWeb.CardControllerTest do
   @invalid_attrs %{details: nil, title: nil}
 
   def fixture(:card) do
-    {:ok, card} = Task.create_card(@create_attrs)
+    {:ok, user: user} = create_user(nil)
+    {:ok, list: list} = create_list(nil)
+
+    attrs =
+      @create_attrs
+      |> Map.put(:user_id, user.id)
+      |> Map.put(:list_id, list.id)
+
+    {:ok, card} = Task.create_card(attrs)
     card
   end
 
@@ -27,7 +41,15 @@ defmodule BoardWeb.CardControllerTest do
   end
 
   describe "create card" do
-    test "redirects to show when data is valid", %{conn: conn} do
+    setup [:create_user, :create_list]
+
+    test "redirects to show when data is valid", %{conn: conn, user: user, list: list} do
+      attrs =
+        Map.merge(@create_attrs, %{
+          user_id: user.id,
+          list_id: list.id
+        })
+
       conn = post(conn, Routes.card_path(conn, :create), card: @create_attrs)
 
       assert %{id: id} = redirected_params(conn)
@@ -75,6 +97,7 @@ defmodule BoardWeb.CardControllerTest do
     test "deletes chosen card", %{conn: conn, card: card} do
       conn = delete(conn, Routes.card_path(conn, :delete, card))
       assert redirected_to(conn) == Routes.card_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.card_path(conn, :show, card))
       end

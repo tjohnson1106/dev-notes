@@ -28,8 +28,12 @@ defmodule BoardWeb.ListControllerTest do
   end
 
   describe "create list" do
-    test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.list_path(conn, :create), list: @create_attrs)
+    setup [:create_user]
+
+    test "redirects to show when data is valid", %{conn: conn, user: user} do
+      attrs = Map.put(@create_attrs, :user_id, user.id)
+
+      conn = post(conn, Routes.list_path(conn, :create), list: attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == Routes.list_path(conn, :show, id)
@@ -38,8 +42,9 @@ defmodule BoardWeb.ListControllerTest do
       assert html_response(conn, 200) =~ "Show List"
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.list_path(conn, :create), list: @invalid_attrs)
+    test "renders errors when data is invalid", %{conn: conn, user: user} do
+      attrs = Map.put(@invalid_attrs, :user_id, user.id)
+      conn = post(conn, Routes.list_path(conn, :create), list: attrs)
       assert html_response(conn, 200) =~ "New List"
     end
   end
