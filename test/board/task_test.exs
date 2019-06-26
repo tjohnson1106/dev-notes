@@ -3,21 +3,22 @@ defmodule Board.TaskTest do
 
   alias Board.Task
 
+  import Board.Fixtures,
+    only: [
+      list_fixture: 0,
+      list_fixture: 1,
+      user_fixture: 1
+    ]
+
+  @create_list_attrs %{name: "some list name"}
+  @create_user_attrs %{username: "some username"}
+
   describe "lists" do
     alias Board.Task.List
 
     @valid_attrs %{name: "some name"}
     @update_attrs %{name: "some updated name"}
     @invalid_attrs %{name: nil}
-
-    def list_fixture(attrs \\ %{}) do
-      {:ok, list} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Task.create_list()
-
-      list
-    end
 
     test "list_lists/0 returns all lists" do
       list = list_fixture()
@@ -30,7 +31,9 @@ defmodule Board.TaskTest do
     end
 
     test "create_list/1 with valid data creates a list" do
-      assert {:ok, %List{} = list} = Task.create_list(@valid_attrs)
+      user = user_fixture(@create_user_attrs)
+      attrs = Map.put(@valid_attrs, :user_id, user.id)
+      assert {:ok, %List{} = list} = Task.create_list(attrs)
       assert list.name == "some name"
     end
 
@@ -70,8 +73,13 @@ defmodule Board.TaskTest do
     @invalid_attrs %{details: nil, title: nil}
 
     def card_fixture(attrs \\ %{}) do
+      user = user_fixture(@create_user_attrs)
+      list = list_fixture(@create_list_attrs)
+
       {:ok, card} =
         attrs
+        |> Map.put(:user_id, user.id)
+        |> Map.put(:list_id, list.id)
         |> Enum.into(@valid_attrs)
         |> Task.create_card()
 
@@ -89,6 +97,15 @@ defmodule Board.TaskTest do
     end
 
     test "create_card/1 with valid data creates a card" do
+      user = user_fixture(@create_user_attrs)
+      list = list_fixture(@create_list_attrs)
+
+      attrs =
+        Map.merge(@valid_attrs, %{
+          user_id: user.id,
+          list_id: list.id
+        })
+
       assert {:ok, %Card{} = card} = Task.create_card(@valid_attrs)
       assert card.details == "some details"
       assert card.title == "some title"

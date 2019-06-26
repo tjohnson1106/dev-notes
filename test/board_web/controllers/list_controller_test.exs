@@ -1,5 +1,6 @@
 defmodule BoardWeb.ListControllerTest do
   use BoardWeb.ConnCase
+  import Board.Fixtures, only: [create_list: 1, create_user: 1]
 
   alias Board.Task
 
@@ -75,14 +76,10 @@ defmodule BoardWeb.ListControllerTest do
     test "deletes chosen list", %{conn: conn, list: list} do
       conn = delete(conn, Routes.list_path(conn, :delete, list))
       assert redirected_to(conn) == Routes.list_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.list_path(conn, :show, list))
       end
     end
-  end
-
-  defp create_list(_) do
-    list = fixture(:list)
-    {:ok, list: list}
   end
 end
