@@ -139,4 +139,122 @@ defmodule Board.TaskTest do
       assert %Ecto.Changeset{} = Task.change_card(card)
     end
   end
+
+  describe "comments" do
+    alias Board.Task.Comment
+
+    @valid_attrs %{body: "some body"}
+    @update_attrs %{body: "some updated body"}
+    @invalid_attrs %{body: nil}
+
+    def comment_fixture(attrs \\ %{}) do
+      {:ok, comment} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Task.create_comment()
+
+      comment
+    end
+
+    test "list_comments/0 returns all comments" do
+      comment = comment_fixture()
+      assert Task.list_comments() == [comment]
+    end
+
+    test "get_comment!/1 returns the comment with given id" do
+      comment = comment_fixture()
+      assert Task.get_comment!(comment.id) == comment
+    end
+
+    test "create_comment/1 with valid data creates a comment" do
+      assert {:ok, %Comment{} = comment} = Task.create_comment(@valid_attrs)
+      assert comment.body == "some body"
+    end
+
+    test "create_comment/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Task.create_comment(@invalid_attrs)
+    end
+
+    test "update_comment/2 with valid data updates the comment" do
+      comment = comment_fixture()
+      assert {:ok, %Comment{} = comment} = Task.update_comment(comment, @update_attrs)
+      assert comment.body == "some updated body"
+    end
+
+    test "update_comment/2 with invalid data returns error changeset" do
+      comment = comment_fixture()
+      assert {:error, %Ecto.Changeset{}} = Task.update_comment(comment, @invalid_attrs)
+      assert comment == Task.get_comment!(comment.id)
+    end
+
+    test "delete_comment/1 deletes the comment" do
+      comment = comment_fixture()
+      assert {:ok, %Comment{}} = Task.delete_comment(comment)
+      assert_raise Ecto.NoResultsError, fn -> Task.get_comment!(comment.id) end
+    end
+
+    test "change_comment/1 returns a comment changeset" do
+      comment = comment_fixture()
+      assert %Ecto.Changeset{} = Task.change_comment(comment)
+    end
+  end
+
+  describe "activities" do
+    alias Board.Task.Activity
+
+    @valid_attrs %{action: "some action"}
+    @update_attrs %{action: "some updated action"}
+    @invalid_attrs %{action: nil}
+
+    def activity_fixture(attrs \\ %{}) do
+      {:ok, activity} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Task.create_activity()
+
+      activity
+    end
+
+    test "list_activities/0 returns all activities" do
+      activity = activity_fixture()
+      assert Task.list_activities() == [activity]
+    end
+
+    test "get_activity!/1 returns the activity with given id" do
+      activity = activity_fixture()
+      assert Task.get_activity!(activity.id) == activity
+    end
+
+    test "create_activity/1 with valid data creates a activity" do
+      assert {:ok, %Activity{} = activity} = Task.create_activity(@valid_attrs)
+      assert activity.action == "some action"
+    end
+
+    test "create_activity/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Task.create_activity(@invalid_attrs)
+    end
+
+    test "update_activity/2 with valid data updates the activity" do
+      activity = activity_fixture()
+      assert {:ok, %Activity{} = activity} = Task.update_activity(activity, @update_attrs)
+      assert activity.action == "some updated action"
+    end
+
+    test "update_activity/2 with invalid data returns error changeset" do
+      activity = activity_fixture()
+      assert {:error, %Ecto.Changeset{}} = Task.update_activity(activity, @invalid_attrs)
+      assert activity == Task.get_activity!(activity.id)
+    end
+
+    test "delete_activity/1 deletes the activity" do
+      activity = activity_fixture()
+      assert {:ok, %Activity{}} = Task.delete_activity(activity)
+      assert_raise Ecto.NoResultsError, fn -> Task.get_activity!(activity.id) end
+    end
+
+    test "change_activity/1 returns a activity changeset" do
+      activity = activity_fixture()
+      assert %Ecto.Changeset{} = Task.change_activity(activity)
+    end
+  end
 end

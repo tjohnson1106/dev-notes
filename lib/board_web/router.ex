@@ -19,6 +19,8 @@ defmodule BoardWeb.Router do
     resources "/cards", CardController
     resources "/lists", ListController
     resources "/users", UserController
+    resources "/comments", CommentController
+    resources "/activities", ActivityController
 
     get "/", PageController, :index
   end
