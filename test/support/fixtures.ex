@@ -1,7 +1,7 @@
 defmodule Board.Fixtures do
   alias Board.Accounts
 
-  @create_list_attrs %{name: "some list name"}
+  @create_list_attrs %{name: "some list name", position: 0}
   @create_user_attrs %{username: "some username"}
 
   def list_fixture(attrs \\ %{}) do

@@ -4,6 +4,7 @@ defmodule Board.Task.List do
 
   schema "lists" do
     field :name, :string
+    field :position, :integer
     belongs_to :user, Board.Accounts.User
 
     timestamps()
@@ -12,7 +13,7 @@ defmodule Board.Task.List do
   @doc false
   def changeset(list, attrs) do
     list
-    |> cast(attrs, [:name, :user_id])
+    |> cast(attrs, [:name, :position, :user_id])
     |> validate_required([:name, :user_id])
   end
 end
