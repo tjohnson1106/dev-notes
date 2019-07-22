@@ -6,10 +6,10 @@ defmodule Board.Task.Activity do
 
   schema "activities" do
     field :action, :string
+    belongs_to :card, Board.Task.Card
+    belongs_to :user, Board.Accounts.Card
     field :user_id, :id
-    field :from_id, :id
     field :to_id, :id
-    field :card_id, :id
 
     timestamps()
   end
@@ -17,7 +17,14 @@ defmodule Board.Task.Activity do
   @doc false
   def changeset(activity, attrs) do
     activity
-    |> cast(attrs, [:action])
-    |> validate_required([:action])
+    |> cast(attrs, [
+      :action,
+      :card_id,
+      :from_id,
+      :from_id,
+      :to_id,
+      :user_id
+    ])
+    |> validate_required([:action, :card_id, :user_id])
   end
 end
