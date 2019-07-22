@@ -7,10 +7,11 @@ defmodule Board.Task.Comment do
   schema "comments" do
     field :body, :string
 
+    belongs_to :card, Board.Task.Card
+    belongs_to :user, Board.Accounts.User
+    # to acivity schema 072220191727
     field :card_id, :id
     field :user_id, :id
-    belongs_to :card, Board.Task.Card
-    belongs_to :user, Board.Accounts.Card
 
     timestamps()
   end

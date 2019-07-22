@@ -4,45 +4,62 @@ defmodule Board.Fixtures do
   @create_list_attrs %{name: "some list name", position: 0}
   @create_user_attrs %{username: "some username"}
 
-  def list_fixture(attrs \\ %{}) do
-    user =
-      case Elixir.List.last(Board.Accounts.list_users()) do
-        nil ->
-          user_fixture(@create_user_attrs)
+  def card_fixture(attrs \\ %{}) do
+    user = get_or_create_user()
+    list = list_fixture()
 
-        existing_user ->
-          existing_user
-      end
-
-    {:ok, list} =
+    {:ok, card} =
       attrs
-      |> Map.put(:user_id, user.id)
+      |> Map.put(:user, user.id)
+      |> Map.put(:list_id, list.id)
       |> Enum.into(@create_list_attrs)
       |> Task.create_list()
 
-    list
-  end
+    def card_fixture(attrs \\ %{}) do
+      user = get_or_create_user()
+      list = list_fixture()
 
-  def user_fixture(attrs \\ %{}) do
-    {:ok, user} =
-      attrs
-      |> Enum.into(@create_user_attrs)
-      |> Accounts.create_user()
+      {:ok, card} =
+        attrs
+        |> Map.put(:user, user.id)
+        |> Map.put(:list_id, list.id)
+        |> Enum.into(@create_list_attrs)
+        |> Task.create_list()
 
-    user
-  end
+      car
+      card
+    end
 
-  # tasks -> create list
+    def user_fixture(attrs \\ %{}) do
+      {:ok, user} =
+        attrs
+        |> Enum.into(@create_user_attrs)
+        |> Accounts.create_user()
 
-  def create_list(_) do
-    list = list_fixture(@create_list_attrs)
-    {:ok, list: list}
-  end
+      user
+    end
 
-  # tasks -> create user
+    # tasks -> create list
 
-  def create_user(_) do
-    user = user_fixture(@create_user_attrs)
-    {:ok, user: user}
+    def create_list(_) do
+      list = list_fixture(@create_list_attrs)
+      {:ok, list: list}
+    end
+
+    # tasks -> create user
+
+    def create_user(_) do
+      user = user_fixture(@create_user_attrs)
+      {:ok, user: user}
+    end
+
+    # last user if there is one
+    # must be end of the module
+    def get_or_create_user do
+      case Elixir.List.last(Board.Accounts.list_users()) do
+        nil ->
+          user_fixture(@create_user_attrs)
+      end
+    end
   end
 end
