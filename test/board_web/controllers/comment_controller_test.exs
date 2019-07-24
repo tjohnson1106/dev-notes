@@ -1,6 +1,7 @@
 defmodule BoardWeb.CommentControllerTest do
   use BoardWeb.ConnCase
 
+  import Board.Fixture, only: [get_or_create_user: 0, create_card: 1]
   alias Board.Task
 
   @create_attrs %{body: "some body"}
@@ -75,6 +76,7 @@ defmodule BoardWeb.CommentControllerTest do
     test "deletes chosen comment", %{conn: conn, comment: comment} do
       conn = delete(conn, Routes.comment_path(conn, :delete, comment))
       assert redirected_to(conn) == Routes.comment_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.comment_path(conn, :show, comment))
       end

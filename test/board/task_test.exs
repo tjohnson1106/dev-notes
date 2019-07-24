@@ -185,7 +185,7 @@ defmodule Board.TaskTest do
           card_id: card.id
         })
 
-      assert {:ok, %Comment{} = comment} = Task.create_comment(@valid_attrs)
+      assert {:ok, %Comment{} = comment} = Task.create_comment(attrs)
       assert comment.body == "some body"
     end
 
@@ -225,8 +225,15 @@ defmodule Board.TaskTest do
     @invalid_attrs %{action: nil}
 
     def activity_fixture(attrs \\ %{}) do
+      user = get_or_create_user()
+      card = card__fixture(@create_card_attrs)
+
       {:ok, activity} =
         attrs
+        |> Map.merge(%{
+          user_id: user.id,
+          card_id: card.id
+        })
         |> Enum.into(@valid_attrs)
         |> Task.create_activity()
 
@@ -244,7 +251,16 @@ defmodule Board.TaskTest do
     end
 
     test "create_activity/1 with valid data creates a activity" do
-      assert {:ok, %Activity{} = activity} = Task.create_activity(@valid_attrs)
+      user = get_or_create_user()
+      card = card_fixture(@create_card_attrs)
+
+      attrs =
+        Map.merge(@valid_attrs, %{
+          user_id: user.id,
+          card_id: card.id
+        })
+
+      assert {:ok, %Activity{} = activity} = Task.create_activity(attrs)
       assert activity.action == "some action"
     end
 
