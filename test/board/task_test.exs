@@ -5,13 +5,18 @@ defmodule Board.TaskTest do
 
   import Board.Fixtures,
     only: [
+      card_fixture: 0,
+      get_or_create_user: 0,
       list_fixture: 0,
       list_fixture: 1,
       user_fixture: 1
     ]
 
-  @create_list_attrs %{name: "some list name"}
+  @create_card_attrs %{details: "some details", title: "some title"}
+
   @create_user_attrs %{username: "some username"}
+
+  @create_list_attrs %{name: "some list name"}
 
   describe "lists" do
     alias Board.Task.List
@@ -72,19 +77,19 @@ defmodule Board.TaskTest do
     @update_attrs %{details: "some updated details", title: "some updated title"}
     @invalid_attrs %{details: nil, title: nil}
 
-    def card_fixture(attrs \\ %{}) do
-      user = user_fixture(@create_user_attrs)
-      list = list_fixture(@create_list_attrs)
+    # def card_fixture(attrs \\ %{}) do
+    #   user = user_fixture(@create_user_attrs)
+    #   list = list_fixture(@create_list_attrs)
 
-      {:ok, card} =
-        attrs
-        |> Map.put(:user_id, user.id)
-        |> Map.put(:list_id, list.id)
-        |> Enum.into(@valid_attrs)
-        |> Task.create_card()
+    #   {:ok, card} =
+    #     attrs
+    #     |> Map.put(:user_id, user.id)
+    #     |> Map.put(:list_id, list.id)
+    #     |> Enum.into(@valid_attrs)
+    #     |> Task.create_card()
 
-      card
-    end
+    #   card
+    # end
 
     test "list_cards/0 returns all cards" do
       card = card_fixture()
@@ -148,8 +153,12 @@ defmodule Board.TaskTest do
     @invalid_attrs %{body: nil}
 
     def comment_fixture(attrs \\ %{}) do
+      user = get_or_create_user()
+      card = card_fixture(@create_card_attrs)
+
       {:ok, comment} =
         attrs
+        |> Map.merge(%{user_id: user.id, card_id: card.id})
         |> Enum.into(@valid_attrs)
         |> Task.create_comment()
 
@@ -167,6 +176,15 @@ defmodule Board.TaskTest do
     end
 
     test "create_comment/1 with valid data creates a comment" do
+      user = get_or_create_user()
+      card = card_fixture(@create_card_attrs)
+
+      attrs =
+        Map.merge(@valid_attrs, %{
+          user_id: user.id,
+          card_id: card.id
+        })
+
       assert {:ok, %Comment{} = comment} = Task.create_comment(@valid_attrs)
       assert comment.body == "some body"
     end

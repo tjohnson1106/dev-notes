@@ -1,7 +1,7 @@
 defmodule Board.Fixtures do
   alias Board.Accounts
 
-  @create_list_attrs %{name: "some list name", position: 0}
+  @create_card_attrs %{name: "some list name", position: 0}
   @create_user_attrs %{username: "some username"}
 
   def card_fixture(attrs \\ %{}) do
@@ -12,6 +12,8 @@ defmodule Board.Fixtures do
       attrs
       |> Map.put(:user, user.id)
       |> Map.put(:list_id, list.id)
+      # TODO: warning: undefined module attribute @create_list_attrs, please remove access to @create_list_attrs or explicitly set it before access
+      # test/support/fixtures.ex:15: Board.Fixtures (module)
       |> Enum.into(@create_list_attrs)
       |> Task.create_list()
 
